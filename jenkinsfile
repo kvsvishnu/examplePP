@@ -1,0 +1,24 @@
+node('master')
+{
+    stage('continous download')
+    {
+        git 'https://github.com/kvsvishnu/maven.git'
+    }
+    stage('continous build')
+    {
+        sh 'mvn package'
+    }
+    stage('continous deployment')
+    {
+        deploy adapters: [tomcat8(credentialsId: 'e8f42318-d794-4e48-8f98-468c6e12e31b', path: '', url: 'http://172.31.80.17:8080')], contextPath: 'testapp', war: '**\\*.war'
+    }
+    stage('çontinous testing')
+    {
+        git 'https://github.com/kvsvishnu/FunctionalTesting.git'
+        sh 'java -jar /home/ubuntu/.jenkins/workspace/ScriptedPipeline/testing.jar'
+    }
+    stage('continous delivery')
+    {
+        deploy adapters: [tomcat8(credentialsId: 'e8f42318-d794-4e48-8f98-468c6e12e31b', path: '', url: 'http://172.31.95.98:8080')], contextPath: 'prodapp', war: '**\\*.war'
+    }
+}
